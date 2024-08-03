@@ -165,7 +165,7 @@ export default function Home() {
               </Stack>
             </>
           ) : (
-            <Typography variant="h6">Item "{searchTerm}" does not exist.</Typography>
+            <Typography variant="h6">Item &quot;{searchTerm}&quot; does not exist.</Typography>
           )}
         </Box>
       </Modal>
