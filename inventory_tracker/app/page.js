@@ -133,6 +133,16 @@ export default function Home() {
                 setItemName('')
                 handleClose()
               }}
+              sx={{
+                fontWeight: 700, // Make text bold
+                fontSize: '1.1rem', // Adjust font size as needed
+                color: 'black', // Change text color to black
+                borderColor: 'black', // Change border color to black
+                '&:hover': {
+                  borderColor: 'black', // Keep border color black on hover
+                  backgroundColor: 'rgba(0, 0, 0, 0.1)' // Optional: change background on hover
+                }
+              }}
             >Add</Button>
           </Stack>
         </Box>
