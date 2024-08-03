@@ -10,6 +10,10 @@ export default function Home() {
   const [open, setOpen] = useState(false);
   const [itemName, setItemName] = useState('');
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResult, setSearchResult] = useState(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+
   const updateInventory = async () => {
     const snapshot = query(collection(firestore, 'inventory'))
     const docs = await getDocs(snapshot)
@@ -36,6 +40,10 @@ export default function Home() {
     }
 
     await updateInventory()
+
+    if (searchResult && searchResult.name === item) {
+      setSearchResult((prev) => ({ ...prev, quantity: prev.quantity + 1 }))
+    }
   }
 
   const removeItem = async (item) => {
@@ -53,6 +61,22 @@ export default function Home() {
     }
 
     await updateInventory()
+
+    if (searchResult && searchResult.name === item) {
+      setSearchResult((prev) => ({ ...prev, quantity: prev.quantity - 1 }))
+    }
+  }
+
+  const handleSearch = async () => {
+    const docRef = doc(collection(firestore, 'inventory'), searchTerm)
+    const docSnap = await getDoc(docRef)
+
+    if (docSnap.exists()) {
+      setSearchResult({ name: searchTerm, ...docSnap.data() });
+    } else {
+      setSearchResult(null);
+    }
+    setSearchOpen(true);
   }
 
   useEffect(() => {
@@ -61,6 +85,7 @@ export default function Home() {
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
+  const handleSearchClose = () => setSearchOpen(false)
 
   return (
     <Box width="100vw"
@@ -107,10 +132,63 @@ export default function Home() {
           </Stack>
         </Box>
       </Modal>
-      <Button 
-        variant="contained"
-        onClick={() => handleOpen()}
-      >Add New Item</Button>
+
+      <Modal open={searchOpen} onClose={handleSearchClose}>
+        <Box position="absolute" 
+             top="50%" 
+             left="50%" 
+             width={400}
+             bgcolor="white"
+             border="2px solid #0000"
+             boxShadow={24}
+             p={4}
+             display="flex"
+             flexDirection="column"
+             gap={3}
+             sx={{
+              transform: 'translate(-50%, -50%)',
+             }}
+        >
+          {searchResult ? (
+            <>
+              <Typography variant="h6">Modify Item: {searchResult.name.charAt(0).toUpperCase() + searchResult.name.slice(1)}</Typography>
+              <Typography variant="h6">Current Quantity: {searchResult.quantity}</Typography>
+              <Stack direction="row" spacing={2} justifyContent="center">
+                <Button variant="contained" onClick={() => addItem(searchResult.name)}>Add</Button>
+                <Button 
+                  variant="contained" 
+                  onClick={() => removeItem(searchResult.name)}
+                  disabled={searchResult.quantity <= 0}
+                >
+                  Remove
+                </Button>
+              </Stack>
+            </>
+          ) : (
+            <Typography variant="h6">Item "{searchTerm}" does not exist.</Typography>
+          )}
+        </Box>
+      </Modal>
+
+      <Stack width="800px" direction="row" spacing={3}>
+        <Button
+          variant="contained"
+          onClick={() => handleOpen()}
+        >Add New Item</Button>
+
+        <TextField 
+          variant="outlined"
+          fullWidth
+          placeholder="Search item"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <Button
+          variant="contained"
+          onClick={handleSearch}
+        >Search</Button>
+      </Stack>
+      
 
       <Box border="1px solid #333">
         <Box width="800px" height="100px" bgcolor="#ADD8E6" display="flex" alignItems="center" justifyContent="center">
