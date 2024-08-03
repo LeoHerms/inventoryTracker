@@ -4,6 +4,9 @@ import {useState, useEffect} from "react";
 import {firestore} from "@/firebase"
 import {Box, Modal, Typography, Stack, TextField, Button} from "@mui/material";
 import {collection, deleteDoc, getDocs, query, doc, setDoc, getDoc} from "firebase/firestore";
+import { ThemeProvider } from '@mui/material/styles';
+import { theme } from './theme'; // Adjust the path to where theme.js is located
+
 
 export default function Home() {
   const [inventory, setInventory] = useState([]);
@@ -88,6 +91,7 @@ export default function Home() {
   const handleSearchClose = () => setSearchOpen(false)
 
   return (
+    <ThemeProvider theme={theme}>
     <Box width="100vw"
          height="100vh" 
          display="flex" 
@@ -95,6 +99,7 @@ export default function Home() {
          justifyContent="center" 
          alignItems="center"
          gap={2}
+         bgcolor={theme.palette.background.default}
     >
       <Modal open={open} onClose={handleClose}>
         <Box position="absolute" 
@@ -193,7 +198,7 @@ export default function Home() {
       <Box border="1px solid #333">
         <Box width="800px" height="100px" bgcolor="#ADD8E6" display="flex" alignItems="center" justifyContent="center">
           <Typography variant="h2" color="#333">
-              Inventory Items
+              Pantry Items
           </Typography>
         </Box>
       
@@ -229,5 +234,6 @@ export default function Home() {
       </Stack>
       </Box>
     </Box>
+    </ThemeProvider>
   )
 }
